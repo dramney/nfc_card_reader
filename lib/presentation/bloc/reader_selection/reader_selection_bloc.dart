@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../domain/entities/card_reader.dart';
 import '../../../domain/usecases/get_all_card_readers.dart';
 import 'reader_selection_event.dart';
 import 'reader_selection_state.dart';

@@ -7,7 +7,7 @@ import '../../domain/entities/card_reader.dart';
 import '../bloc/reader_nfc/reader_nfc_bloc.dart';
 import '../bloc/reader_nfc/reader_nfc_event.dart';
 import '../bloc/reader_nfc/reader_nfc_state.dart';
-import '../../../di/injection.dart'; // для sl<ReaderNfcBloc>()
+import '../../../di/injection.dart';
 
 class ReaderNfcPage extends StatelessWidget {
   final CardReader reader;
@@ -23,10 +23,40 @@ class ReaderNfcPage extends StatelessWidget {
   }
 }
 
-class ReaderNfcView extends StatelessWidget {
+class ReaderNfcView extends StatefulWidget {
   final CardReader reader;
 
   const ReaderNfcView({super.key, required this.reader});
+
+  @override
+  State<ReaderNfcView> createState() => _ReaderNfcViewState();
+}
+
+class _ReaderNfcViewState extends State<ReaderNfcView> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Коли користувач повертається до додатку
+    if (state == AppLifecycleState.resumed) {
+      // Через невелику затримку перевіряємо NFC
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted) {
+          context.read<ReaderNfcBloc>().add(CheckNfcStatus());
+        }
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +72,6 @@ class ReaderNfcView extends StatelessWidget {
                 Text("InGo", style: AppTextStyles.logoStyle),
                 const Spacer(flex: 2),
 
-                // Room card
                 Container(
                   width: double.infinity,
                   height: 280,
@@ -73,7 +102,7 @@ class ReaderNfcView extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        reader.roomName,
+                        widget.reader.roomName,
                         style: const TextStyle(
                           fontFamily: AppTextStyles.fontFamily,
                           fontSize: 32,
@@ -112,12 +141,11 @@ class ReaderNfcView extends StatelessWidget {
                         text: "Картку зчитано: ${state.cardId}",
                       );
                     } else if (state is ReaderNfcFailure) {
-                      // Спеціально для повідомлення, якщо NFC вимкнено
                       final isNfcDisabled = state.message.toLowerCase().contains("nfc");
                       return _buildNfcStatus(
-                        icon: isNfcDisabled ? Icons.block : Icons.nfc,
+                        icon: isNfcDisabled ? Icons.block : Icons.error_outline,
                         text: isNfcDisabled
-                            ? "Увімкніть NFC на пристрої"
+                            ? "Увімкніть NFC в налаштуваннях\nПовернення до додатку автоматично перевірить стан"
                             : "Помилка: ${state.message}",
                       );
                     }

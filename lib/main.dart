@@ -9,6 +9,6 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  di.init(); // Ініціалізація залежностей
+  di.init();
   runApp(const InGoApp());
 }

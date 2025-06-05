@@ -4,7 +4,6 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_gradients.dart';
 import '../../core/constants/app_text_styles.dart';
 import '../bloc/reader_selection/reader_selection_bloc.dart';
-import '../bloc/reader_selection/reader_selection_event.dart';
 import '../bloc/reader_selection/reader_selection_state.dart';
 import '../routes/app_router.dart';
 import '../widgets/card_reader_tile.dart';

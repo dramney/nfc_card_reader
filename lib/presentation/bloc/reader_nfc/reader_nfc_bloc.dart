@@ -7,6 +7,8 @@ class ReaderNfcBloc extends Bloc<ReaderNfcEvent, ReaderNfcState> {
   final ReadNfcCard readNfcCard;
 
   ReaderNfcBloc(this.readNfcCard) : super(ReaderNfcInitial()) {
+
+    // зчитує картку
     on<StartNfcScan>((event, emit) async {
       emit(ReaderNfcScanning());
       try {
@@ -16,5 +18,17 @@ class ReaderNfcBloc extends Bloc<ReaderNfcEvent, ReaderNfcState> {
         emit(ReaderNfcFailure(e.toString()));
       }
     });
+
+    // трекає статус нфс
+    on<CheckNfcStatus>((event, emit) async {
+      emit(ReaderNfcScanning());
+      try {
+        final id = await readNfcCard();
+        emit(ReaderNfcSuccess(id));
+      } catch (e) {
+        emit(ReaderNfcFailure(e.toString()));
+      }
+    });
+
   }
 }

@@ -15,7 +15,7 @@ class InGoApp extends StatelessWidget {
         BlocProvider(
           create: (_) => sl<ReaderSelectionBloc>()..add(LoadCardReaders()),
         ),
-        // Тут можна додавати інші Bloc-и
+        // Тут блоки
       ],
       child: MaterialApp(
         title: 'InGo Card Reader',
