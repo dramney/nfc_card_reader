@@ -1,3 +1,15 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("com.android.tools.build:gradle:8.1.1") // актуальна версія AGP
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.20") // онови Kotlin сюди
+        classpath("com.google.gms:google-services:4.3.15") // Google Services plugin
+    }
+}
+
 allprojects {
     repositories {
         google()

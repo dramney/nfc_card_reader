@@ -6,6 +6,8 @@ import '../../core/constants/app_text_styles.dart';
 import '../bloc/reader_selection/reader_selection_bloc.dart';
 import '../bloc/reader_selection/reader_selection_event.dart';
 import '../bloc/reader_selection/reader_selection_state.dart';
+import '../routes/app_router.dart';
+import '../widgets/card_reader_tile.dart';
 
 class ReaderSelectionPage extends StatelessWidget {
   const ReaderSelectionPage({super.key});
@@ -47,39 +49,19 @@ class ReaderSelectionPage extends StatelessWidget {
                             mainAxisSpacing: 16,
                             childAspectRatio: 1.2,
                           ),
-                          itemBuilder: (context, index) {
-                            final reader = readers[index];
-                            return GestureDetector(
-                              onTap: () {
-                                // TODO: перехід до NFC-екрану
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(16),
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      AppColors.accent.withOpacity(0.5),
-                                      AppColors.accent.withOpacity(0.1),
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                  border: Border.all(color: AppColors.white.withOpacity(0.3)),
-                                ),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  reader.roomName,
-                                  style: const TextStyle(
-                                    fontFamily: AppTextStyles.fontFamily,
-                                    fontSize: 16,
-                                    color: AppColors.white,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            );
-                          },
+                            itemBuilder: (context, index) {
+                              final reader = readers[index];
+                              return CardReaderTile(
+                                reader: reader,
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    AppRouter.readerNfc,
+                                    arguments: reader,
+                                  );
+                                },
+                              );
+                            },
                         );
                       } else if (state is ReaderSelectionError) {
                         return Center(child: Text("Error: ${state.message}"));
