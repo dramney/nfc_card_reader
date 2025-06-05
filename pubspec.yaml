@@ -1,0 +1,49 @@
+name: ingo_app
+description: InGo NFC Access Control System
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: '>=3.10.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management & DI
+  flutter_bloc: ^8.1.3
+  get_it: ^7.6.4
+  injectable: ^2.3.2
+  equatable: ^2.0.5
+
+  # Functional programming
+  dartz: ^0.10.1
+
+  # Firebase (Firestore only)
+  firebase_core: ^2.24.2
+  cloud_firestore: ^4.13.6
+
+  # NFC
+  nfc_manager: ^3.3.0
+
+  # Code generation
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.8.1
+
+  # Needed for web (Firestore interop)
+  js: ^0.6.7
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # Code generation
+  build_runner: ^2.4.7
+  freezed: ^2.4.6
+  injectable_generator: ^2.4.1
+  json_serializable: ^6.7.1
+
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true

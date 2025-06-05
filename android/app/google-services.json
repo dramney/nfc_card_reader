@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "980835869902",
+    "project_id": "ingo-abd97",
+    "storage_bucket": "ingo-abd97.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:980835869902:android:22bdb745fe834169441c9f",
+        "android_client_info": {
+          "package_name": "com.example.card_reader_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_Gmdrsj_zo0JZDwQJVJ2HHGuVw23WAJs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
