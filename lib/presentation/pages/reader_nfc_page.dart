@@ -69,7 +69,18 @@ class _ReaderNfcViewState extends State<ReaderNfcView> with WidgetsBindingObserv
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
             child: Column(
               children: [
-                Text("InGo", style: AppTextStyles.logoStyle),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.white),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                    Text("InGo", style: AppTextStyles.logoStyle),
+                    const SizedBox(width: 48), // щоб збалансувати простір справа
+                  ],
+                ),
+
                 const Spacer(flex: 2),
 
                 Container(
