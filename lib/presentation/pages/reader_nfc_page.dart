@@ -41,6 +41,8 @@ class _ReaderNfcViewState extends State<ReaderNfcView> with WidgetsBindingObserv
 
   @override
   void dispose() {
+    // Зупиняємо сканування при виході
+    context.read<ReaderNfcBloc>().add(StopNfcScan());
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -55,7 +57,22 @@ class _ReaderNfcViewState extends State<ReaderNfcView> with WidgetsBindingObserv
           context.read<ReaderNfcBloc>().add(CheckNfcStatus());
         }
       });
+    } else if (state == AppLifecycleState.paused) {
+      // Зупиняємо сканування коли додаток не активний
+      if (mounted) {
+        context.read<ReaderNfcBloc>().add(StopNfcScan());
+      }
     }
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppColors.primary,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override
@@ -74,10 +91,13 @@ class _ReaderNfcViewState extends State<ReaderNfcView> with WidgetsBindingObserv
                   children: [
                     IconButton(
                       icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.white),
-                      onPressed: () => Navigator.of(context).pop(),
+                      onPressed: () {
+                        context.read<ReaderNfcBloc>().add(StopNfcScan());
+                        Navigator.of(context).pop();
+                      },
                     ),
                     Text("InGo", style: AppTextStyles.logoStyle),
-                    const SizedBox(width: 48), // щоб збалансувати простір справа
+                    const SizedBox(width: 48),
                   ],
                 ),
 
@@ -139,31 +159,80 @@ class _ReaderNfcViewState extends State<ReaderNfcView> with WidgetsBindingObserv
                 const SizedBox(height: 40),
 
                 // NFC state
-                BlocBuilder<ReaderNfcBloc, ReaderNfcState>(
+                BlocConsumer<ReaderNfcBloc, ReaderNfcState>(
+                  listener: (context, state) {
+                    if (state is ReaderNfcSuccess) {
+                      _showSnackBar("Картку успішно зчитано: ${state.cardId}");
+                      // Через 2 секунди автоматично повертаємося назад
+                      Future.delayed(const Duration(seconds: 2), () {
+                        if (mounted) {
+                          Navigator.of(context).pop();
+                        }
+                      });
+                    }
+                  },
                   builder: (context, state) {
                     if (state is ReaderNfcScanning) {
                       return _buildNfcStatus(
                         icon: Icons.nfc,
                         text: "Піднесіть NFC картку до пристрою...",
+                        showAnimation: true,
                       );
                     } else if (state is ReaderNfcSuccess) {
                       return _buildNfcStatus(
                         icon: Icons.check_circle_outline,
                         text: "Картку зчитано: ${state.cardId}",
+                        iconColor: Colors.green,
                       );
                     } else if (state is ReaderNfcFailure) {
                       final isNfcDisabled = state.message.toLowerCase().contains("nfc");
-                      return _buildNfcStatus(
-                        icon: isNfcDisabled ? Icons.block : Icons.error_outline,
-                        text: isNfcDisabled
-                            ? "Увімкніть NFC в налаштуваннях\nПовернення до додатку автоматично перевірить стан"
-                            : "Помилка: ${state.message}",
+                      return Column(
+                        children: [
+                          _buildNfcStatus(
+                            icon: isNfcDisabled ? Icons.block : Icons.error_outline,
+                            text: isNfcDisabled
+                                ? "Увімкніть NFC в налаштуваннях\nПовернення до додатку автоматично перевірить стан"
+                                : "Помилка: ${state.message}",
+                            iconColor: Colors.red,
+                          ),
+                          const SizedBox(height: 20),
+                          if (!isNfcDisabled)
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                context.read<ReaderNfcBloc>().add(StartNfcScan());
+                              },
+                              icon: const Icon(Icons.refresh),
+                              label: const Text("Спробувати знову"),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.accent,
+                                foregroundColor: AppColors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                              ),
+                            ),
+                        ],
                       );
                     }
 
-                    return _buildNfcStatus(
-                      icon: Icons.nfc,
-                      text: "Готово до сканування",
+                    return Column(
+                      children: [
+                        _buildNfcStatus(
+                          icon: Icons.nfc,
+                          text: "Готово до сканування",
+                        ),
+                        const SizedBox(height: 20),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            context.read<ReaderNfcBloc>().add(StartNfcScan());
+                          },
+                          icon: const Icon(Icons.search),
+                          label: const Text("Почати сканування"),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.accent,
+                            foregroundColor: AppColors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                          ),
+                        ),
+                      ],
                     );
                   },
                 ),
@@ -177,12 +246,27 @@ class _ReaderNfcViewState extends State<ReaderNfcView> with WidgetsBindingObserv
     );
   }
 
-  Widget _buildNfcStatus({required IconData icon, required String text}) {
+  Widget _buildNfcStatus({
+    required IconData icon,
+    required String text,
+    Color? iconColor,
+    bool showAnimation = false,
+  }) {
     return Column(
       children: [
-        Icon(
+        showAnimation
+            ? AnimatedRotation(
+          turns: 1,
+          duration: const Duration(seconds: 2),
+          child: Icon(
+            icon,
+            color: iconColor ?? AppColors.white.withOpacity(0.9),
+            size: 36,
+          ),
+        )
+            : Icon(
           icon,
-          color: AppColors.white.withOpacity(0.9),
+          color: iconColor ?? AppColors.white.withOpacity(0.9),
           size: 36,
         ),
         const SizedBox(height: 12),

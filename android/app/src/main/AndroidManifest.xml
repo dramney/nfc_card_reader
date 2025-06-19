@@ -1,11 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Дозвіл на використання NFC -->
     <uses-permission android:name="android.permission.NFC" />
-
-    <!-- Дозначає, що NFC використовується, але не обов'язковий (щоб працювало і на телефонах без NFC) -->
-    <uses-feature android:name="android.hardware.nfc" android:required="false"/>
-
+    <uses-feature android:name="android.hardware.nfc" android:required="true" />
 
     <application
         android:label="card_reader_app"

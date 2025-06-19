@@ -24,7 +24,7 @@ dependencies:
   cloud_firestore: ^4.13.6
 
   # NFC
-  nfc_manager: ^4.0.2
+  nfc_manager: 3.3.0
   flutter_nfc_kit: ^3.3.0
 
   # Code generation
